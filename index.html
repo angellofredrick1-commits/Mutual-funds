@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,13 +76,13 @@ h1 {
   color: var(--green); white-space: nowrap;
 }
 .scribble {
-  position: absolute; left: -12px; top: -8px;
-  width: calc(100% + 24px); height: calc(100% + 20px);
+  position: absolute; left: -18px; top: -14px;
+  width: calc(100% + 36px); height: calc(100% + 30px);
   pointer-events: none; overflow: visible;
 }
 .scribble-path {
   stroke-dasharray: 1; stroke-dashoffset: 1;
-  animation: draw 1.2s 0.4s cubic-bezier(0.4,0,0.2,1) forwards;
+  animation: draw 1.4s 0.5s cubic-bezier(0.4,0,0.2,1) forwards;
 }
 @keyframes draw { to { stroke-dashoffset: 0; } }
  
@@ -192,7 +193,7 @@ h1 {
  
     <div class="hero-text">
       <div class="eyebrow">Live Market Intelligence</div>
-      <h1>Tanzania's stock market,<br>finally made <span class="circled">clear<svg class="scribble" viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10 38 C 5 10, 30 2, 60 4 C 90 6, 118 14, 115 28 C 112 42, 88 48, 58 47 C 28 46, 4 40, 8 30 C 12 20, 40 16, 65 17" stroke="#1a9e58" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none" pathLength="1" class="scribble-path"/></svg></span>.</h1>
+      <h1>Tanzania's stock market,<br>finally made <span class="circled">clear<svg class="scribble" viewBox="0 0 140 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 44 C 6 12, 34 2, 70 4 C 106 6, 134 16, 131 32 C 128 48, 100 56, 68 55 C 36 54, 6 46, 10 34 C 14 22, 46 18, 74 19" stroke="#1a9e58" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.45" pathLength="1" class="scribble-path"/></svg></span>.</h1>
       <p class="sub">Daily DSE briefings, corporate actions, ETF performance, and monthly capital market reports — free, in your inbox. Built for serious Tanzania investors.</p>
       <div class="features">
         <div class="feat"><span class="feat-icon">📊</span> Daily market snapshots</div>
@@ -233,8 +234,45 @@ h1 {
         <div style="position:absolute;left:-5000px;" aria-hidden="true">
           <input type="text" name="b_39be5a85b14339a678b5d89ef_ef7e189238" tabindex="-1" value=""/>
         </div>
-        <button type="submit" class="submit-btn">Subscribe — It's Free →</button>
+        <button type="submit" class="submit-btn" id="submit-btn">Subscribe — It's Free →</button>
+        <div id="form-error" style="display:none;background:#fdeaea;color:#c0392b;border:1px solid #f5c6c6;border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px;"></div>
+        <div id="form-success" style="display:none;background:var(--green-l);color:var(--green);border:1px solid var(--green-m);border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px;"></div>
       </form>
+ 
+      <script>
+      document.getElementById('mc-embedded-subscribe-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var fname = document.getElementById('mce-FNAME').value.trim();
+        var lname = document.getElementById('mce-LNAME').value.trim();
+        var email = document.getElementById('mce-EMAIL').value.trim();
+        var errEl = document.getElementById('form-error');
+        var sucEl = document.getElementById('form-success');
+        var btn   = document.getElementById('submit-btn');
+        errEl.style.display = 'none';
+        sucEl.style.display = 'none';
+        if (!fname) { errEl.textContent = 'Please enter your first name.'; errEl.style.display = 'block'; document.getElementById('mce-FNAME').focus(); return; }
+        if (!lname) { errEl.textContent = 'Please enter your last name.'; errEl.style.display = 'block'; document.getElementById('mce-LNAME').focus(); return; }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent = 'Please enter a valid email address.'; errEl.style.display = 'block'; document.getElementById('mce-EMAIL').focus(); return; }
+        btn.textContent = 'Subscribing\u2026'; btn.disabled = true;
+        var form = this;
+        var url = form.action.replace('/post?', '/post-json?') + '&c=__mcCallback';
+        var params = new URLSearchParams(new FormData(form)).toString();
+        var script = document.createElement('script');
+        window.__mcCallback = function(resp) {
+          document.body.removeChild(script); delete window.__mcCallback;
+          btn.textContent = "Subscribe \u2014 It's Free \u2192"; btn.disabled = false;
+          if (resp.result === 'success') {
+            sucEl.textContent = '\uD83C\uDF89 You\'re in! Check your inbox for a welcome email.';
+            sucEl.style.display = 'block'; form.reset();
+          } else {
+            errEl.textContent = (resp.msg || 'Something went wrong. Please try again.').replace(/<[^>]+>/g, '');
+            errEl.style.display = 'block';
+          }
+        };
+        script.src = url + '&' + params;
+        document.body.appendChild(script);
+      });
+      </script>
  
       <div class="trust">
         <div class="trust-item"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>No spam</div>
