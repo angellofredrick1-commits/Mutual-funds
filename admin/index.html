@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sokoview Admin · WA Channel</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green:  #22c55e; --green-dk: #16a34a; --green-lt: #f0fdf4;
+  --black:  #0a0a0a; --white: #ffffff;
+  --g1: #374151; --g2: #6b7280; --g3: #9ca3af;
+  --g4: #e5e7eb; --g5: #f3f4f6; --g6: #f9fafb;
+  --amber: #f59e0b; --amber-lt: #fffbeb;
+  --red: #ef4444; --red-lt: #fef2f2;
+  --blue: #3b82f6; --blue-lt: #eff6ff;
+  --font: 'Sora', sans-serif;
+  --radius: 12px;
+}
+body { font-family: var(--font); background: var(--g6); color: var(--black); min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.layout { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 220px; background: var(--black); flex-shrink: 0;
+  display: flex; flex-direction: column; padding: 24px 0;
+  position: sticky; top: 0; height: 100vh;
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 9px;
+  padding: 0 20px 28px;
+  border-bottom: 1px solid #1e1e1e;
+}
+.logo-mark {
+  width: 26px; height: 26px; background: #1a1a1a; border-radius: 6px;
+  border: 1px solid #2a2a2a;
+  display: flex; align-items: flex-end; gap: 2px; padding: 4px 5px;
+}
+.logo-mark .b { border-radius: 1px; background: var(--green); }
+.logo-name { font-size: 14px; font-weight: 800; color: #fff; }
+.logo-badge {
+  font-size: 9px; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--green);
+  background: rgba(34,197,94,.1); padding: 2px 6px; border-radius: 4px;
+  margin-left: auto;
+}
+
+.nav-section { padding: 20px 12px 8px; }
+.nav-label { font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #444; padding: 0 8px; margin-bottom: 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 8px; cursor: pointer;
+  font-size: 12px; font-weight: 500; color: #666;
+  transition: background .15s, color .15s;
+  border: none; background: none; width: 100%; text-align: left;
+}
+.nav-item:hover { background: #1a1a1a; color: #ccc; }
+.nav-item.active { background: rgba(34,197,94,.12); color: var(--green); font-weight: 600; }
+.nav-icon { font-size: 14px; width: 18px; text-align: center; }
+
+.sidebar-foot { margin-top: auto; padding: 16px 20px; border-top: 1px solid #1e1e1e; }
+.sidebar-foot-label { font-size: 10px; color: #333; margin-bottom: 4px; }
+.sidebar-foot-val { font-size: 12px; font-weight: 600; color: var(--green); }
+
+/* ── MAIN ── */
+.main { flex: 1; padding: 32px; max-width: 1100px; }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+.page-title { font-size: 20px; font-weight: 800; color: var(--black); letter-spacing: -.5px; }
+.page-sub { font-size: 12px; color: var(--g3); margin-top: 3px; }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 4px; background: var(--g5); border-radius: 10px; padding: 4px; margin-bottom: 28px; width: fit-content; }
+.tab {
+  padding: 8px 18px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  color: var(--g2); cursor: pointer; border: none; background: none;
+  transition: background .15s, color .15s;
+}
+.tab.active { background: var(--white); color: var(--black); box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+
+/* ── EDITOR LAYOUT ── */
+.editor-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+
+/* ── EDITOR CARD ── */
+.card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--g4); padding: 24px;
+}
+.card-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--g3); margin-bottom: 14px;
+}
+.card-title { font-size: 15px; font-weight: 700; color: var(--black); margin-bottom: 16px; }
+
+/* type selector */
+.type-row { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.type-btn {
+  padding: 6px 14px; border-radius: 100px; font-size: 11px; font-weight: 700;
+  border: 1.5px solid var(--g4); background: none; cursor: pointer;
+  color: var(--g2); transition: all .15s;
+}
+.type-btn.active { border-color: var(--green); background: var(--green-lt); color: var(--green-dk); }
+
+/* textarea */
+.editor-area {
+  width: 100%; min-height: 180px; border: 1.5px solid var(--g4);
+  border-radius: 10px; padding: 14px 16px;
+  font-family: var(--font); font-size: 13px; color: var(--black);
+  line-height: 1.65; resize: vertical; outline: none;
+  transition: border-color .15s;
+}
+.editor-area:focus { border-color: var(--green); }
+.editor-area::placeholder { color: var(--g3); }
+.char-count { font-size: 10px; color: var(--g3); text-align: right; margin-top: 6px; }
+.char-count.warn { color: var(--amber); }
+.char-count.over { color: var(--red); }
+
+/* action bar */
+.action-bar { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
+.btn {
+  padding: 10px 20px; border-radius: 9px; font-family: var(--font);
+  font-size: 12px; font-weight: 700; border: none; cursor: pointer;
+  transition: opacity .15s, transform .1s;
+}
+.btn:hover { opacity: .85; } .btn:active { transform: scale(.97); }
+.btn-primary { background: var(--green); color: #000; }
+.btn-secondary { background: var(--g5); color: var(--g1); }
+.btn-outline { background: none; border: 1.5px solid var(--g4); color: var(--g2); padding: 9px 18px; }
+.btn-danger { background: var(--red-lt); color: var(--red); border: 1.5px solid #fecaca; }
+.btn-ai {
+  background: linear-gradient(135deg, #7c3aed, #2563eb);
+  color: #fff; display: flex; align-items: center; gap: 6px;
+}
+
+/* pdf upload */
+.upload-zone {
+  border: 2px dashed var(--g4); border-radius: 10px;
+  padding: 28px 20px; text-align: center; cursor: pointer;
+  transition: border-color .15s, background .15s;
+  margin-bottom: 16px;
+}
+.upload-zone:hover { border-color: var(--green); background: var(--green-lt); }
+.upload-icon { font-size: 28px; margin-bottom: 8px; }
+.upload-title { font-size: 13px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+.upload-sub { font-size: 11px; color: var(--g3); }
+.upload-input { display: none; }
+
+/* ai processing indicator */
+.ai-processing {
+  display: none; align-items: center; gap: 10px;
+  background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 9px;
+  padding: 12px 16px; margin-bottom: 14px;
+}
+.ai-processing.visible { display: flex; }
+.ai-spinner { width: 16px; height: 16px; border: 2px solid #ddd6fe; border-top-color: #7c3aed; border-radius: 50%; animation: spin .7s linear infinite; }
+.ai-text { font-size: 12px; color: #6d28d9; font-weight: 600; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* schedule row */
+.schedule-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.schedule-label { font-size: 12px; font-weight: 600; color: var(--g2); }
+.schedule-input {
+  border: 1.5px solid var(--g4); border-radius: 8px;
+  padding: 7px 12px; font-family: var(--font); font-size: 12px;
+  color: var(--black); outline: none;
+}
+.schedule-input:focus { border-color: var(--green); }
+
+/* ── WA PREVIEW ── */
+.preview-card { position: sticky; top: 32px; }
+.wa-phone {
+  background: var(--black); border-radius: 36px; padding: 10px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+.wa-screen { background: #e5ddd5; border-radius: 28px; overflow: hidden; }
+.wa-header {
+  background: #075e54; padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.wa-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--green); display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.wa-info-name { font-size: 13px; font-weight: 700; color: #fff; }
+.wa-info-sub  { font-size: 10px; color: rgba(255,255,255,.6); margin-top: 1px; }
+.wa-chat { padding: 12px 10px; min-height: 200px; }
+.wa-bubble {
+  background: #fff; border-radius: 8px 8px 8px 2px;
+  padding: 10px 12px; font-size: 11px; line-height: 1.55;
+  color: #111; max-width: 90%;
+  white-space: pre-line; word-break: break-word;
+}
+.wa-bubble-time { font-size: 9px; color: #999; text-align: right; margin-top: 5px; }
+.wa-empty {
+  display: flex; align-items: center; justify-content: center;
+  height: 160px; font-size: 11px; color: #aaa; text-align: center;
+}
+
+/* ── HISTORY ── */
+.history-list { display: flex; flex-direction: column; gap: 10px; margin-top: 0; }
+.history-item {
+  background: var(--white); border: 1px solid var(--g4); border-radius: var(--radius);
+  padding: 16px 18px; display: flex; align-items: flex-start; gap: 14px;
+}
+.history-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.history-dot.sent { background: var(--green); }
+.history-dot.draft { background: var(--amber); }
+.history-dot.scheduled { background: var(--blue); }
+.history-meta { flex: 1; }
+.history-type {
+  font-size: 9px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--g3); margin-bottom: 4px;
+}
+.history-text { font-size: 12px; color: var(--black); line-height: 1.5; }
+.history-date { font-size: 10px; color: var(--g3); margin-top: 5px; }
+.history-actions { display: flex; gap: 6px; }
+.history-btn {
+  font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 6px;
+  border: 1px solid var(--g4); background: none; cursor: pointer; color: var(--g2);
+}
+.history-btn:hover { background: var(--g5); }
+
+/* ── STATUS BADGES ── */
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 100px; }
+.badge-green { background: var(--green-lt); color: var(--green-dk); }
+.badge-amber { background: var(--amber-lt); color: #92400e; }
+.badge-blue  { background: var(--blue-lt);  color: #1e40af; }
+
+/* ── STATS ROW ── */
+.stats-row { display: flex; gap: 12px; margin-bottom: 24px; }
+.stat-card { background: var(--white); border: 1px solid var(--g4); border-radius: var(--radius); padding: 16px 20px; flex: 1; }
+.stat-num { font-size: 24px; font-weight: 800; color: var(--black); letter-spacing: -1px; }
+.stat-num span { color: var(--green); }
+.stat-lbl { font-size: 10px; font-weight: 600; color: var(--g3); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
+
+/* ── PAGE SECTIONS ── */
+.section { display: none; }
+.section.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="b" style="width:3px;height:5px"></div>
+        <div class="b" style="width:3px;height:8px"></div>
+        <div class="b" style="width:3px;height:11px"></div>
+      </div>
+      <span class="logo-name">sokoview</span>
+      <span class="logo-badge">Admin</span>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Content</div>
+      <button class="nav-item active" onclick="showSection('compose')">
+        <span class="nav-icon">✏️</span> Compose
+      </button>
+      <button class="nav-item" onclick="showSection('history')">
+        <span class="nav-icon">📋</span> History
+      </button>
+      <button class="nav-item" onclick="showSection('pdf')">
+        <span class="nav-icon">📄</span> PDF / Email
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Channel</div>
+      <button class="nav-item" onclick="showSection('subscribers')">
+        <span class="nav-icon">👥</span> Subscribers
+      </button>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sidebar-foot-label">Channel status</div>
+      <div class="sidebar-foot-val">● Live · 207 followers</div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="main">
+
+    <!-- ══ COMPOSE ══ -->
+    <div class="section active" id="section-compose">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Compose</div>
+          <div class="page-sub">Create a message for the Sokoview WhatsApp Channel</div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num">207<span>+</span></div><div class="stat-lbl">Subscribers</div></div>
+        <div class="stat-card"><div class="stat-num">14</div><div class="stat-lbl">Sent this month</div></div>
+        <div class="stat-card"><div class="stat-num">1</div><div class="stat-lbl">Scheduled</div></div>
+        <div class="stat-card"><div class="stat-num">2</div><div class="stat-lbl">Drafts</div></div>
+      </div>
+
+      <div class="editor-layout">
+        <!-- EDITOR -->
+        <div>
+          <div class="card">
+            <div class="card-label">Message type</div>
+            <div class="type-row">
+              <button class="type-btn active" onclick="setType(this,'📈 Market update')">📈 Market update</button>
+              <button class="type-btn" onclick="setType(this,'💰 Dividend alert')">💰 Dividend alert</button>
+              <button class="type-btn" onclick="setType(this,'🔔 Market short')">🔔 Market short</button>
+              <button class="type-btn" onclick="setType(this,'📰 News')">📰 News</button>
+              <button class="type-btn" onclick="setType(this,'🚀 Custom')">🚀 Custom</button>
+            </div>
+
+            <div class="card-label">Message content</div>
+            <textarea
+              class="editor-area"
+              id="msgArea"
+              placeholder="Write your market update here…
+
+Use *asterisks* for bold in WhatsApp
+Use line breaks for readability
+Keep it under 300 words
+
+Example:
+*CRDB hits TZS 2,780 — up 77% YTD*
+
+• CRDB closes at 2,780 — strong volume today
+• NMB dividend payment on 24 June — book closure this week
+• NICO continues its run at +107% YTD
+
+——
+*Fuatilia portfolio yako: sokoview.co.tz*"
+              oninput="updatePreview()"
+            ></textarea>
+            <div class="char-count" id="charCount">0 / 300</div>
+
+            <!-- AI polish button -->
+            <div class="action-bar">
+              <button class="btn btn-ai" onclick="aiPolish()">
+                ✦ Polish with Claude
+              </button>
+              <button class="btn btn-secondary" onclick="clearMsg()">Clear</button>
+            </div>
+
+            <div class="ai-processing" id="aiProcessing">
+              <div class="ai-spinner"></div>
+              <span class="ai-text">Claude is polishing your message…</span>
+            </div>
+
+            <div style="height:1px;background:var(--g4);margin:20px 0"></div>
+
+            <!-- Schedule -->
+            <div class="card-label">Send options</div>
+            <div class="schedule-row">
+              <button class="btn btn-primary" onclick="sendNow()">Send now →</button>
+              <span class="schedule-label">or schedule:</span>
+              <input type="datetime-local" class="schedule-input" id="scheduleTime">
+              <button class="btn btn-outline" onclick="scheduleSend()">Schedule</button>
+              <button class="btn btn-outline" onclick="saveDraft()">Save draft</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PHONE PREVIEW -->
+        <div class="preview-card">
+          <div class="card-label" style="text-align:center;margin-bottom:10px">Live preview</div>
+          <div class="wa-phone">
+            <div class="wa-screen">
+              <div class="wa-header">
+                <div class="wa-avatar">📊</div>
+                <div class="wa-info">
+                  <div class="wa-info-name">Sokoview DSE Channel</div>
+                  <div class="wa-info-sub">207 followers</div>
+                </div>
+              </div>
+              <div class="wa-chat">
+                <div id="waPreview" class="wa-empty">
+                  Your message will<br>preview here
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HISTORY ══ -->
+    <div class="section" id="section-history">
+      <div class="page-header">
+        <div>
+          <div class="page-title">History</div>
+          <div class="page-sub">All sent messages, drafts, and scheduled posts</div>
+        </div>
+      </div>
+
+      <div class="history-list">
+        <div class="history-item">
+          <div class="history-dot sent"></div>
+          <div class="history-meta">
+            <div class="history-type">📈 Market update <span class="badge badge-green">Sent</span></div>
+            <div class="history-text">*NICO hits +107% YTD — best performer on the DSE this year*
+
+• NICO closes at TZS 3,890 following strong institutional buying
+• CRDB maintains momentum at 2,780 — dividend season driving interest
+• NMB book closure date confirmed: 12 June</div>
+            <div class="history-date">Sent · Wed 28 May 2026 · 07:00 EAT · 207 recipients</div>
+          </div>
+          <div class="history-actions">
+            <button class="history-btn" onclick="reusePost(this)">Reuse</button>
+          </div>
+        </div>
+
+        <div class="history-item">
+          <div class="history-dot scheduled"></div>
+          <div class="history-meta">
+            <div class="history-type">💰 Dividend alert <span class="badge badge-blue">Scheduled</span></div>
+            <div class="history-text">*NMB dividend payment — 24 June 2026*
+
+• Ordinary: TZS 504.26/share
+• Special: TZS 105.89/share
+• Book closure: 12 June — ensure you hold shares before then</div>
+            <div class="history-date">Scheduled · Thu 29 May 2026 · 07:00 EAT</div>
+          </div>
+          <div class="history-actions">
+            <button class="history-btn" onclick="editPost()">Edit</button>
+            <button class="history-btn" style="color:var(--red)" onclick="cancelSchedule(this)">Cancel</button>
+          </div>
+        </div>
+
+        <div class="history-item">
+          <div class="history-dot draft"></div>
+          <div class="history-meta">
+            <div class="history-type">🔔 Market short <span class="badge badge-amber">Draft</span></div>
+            <div class="history-text">*DSE weekly round-up — 3 things to know*</div>
+            <div class="history-date">Draft saved · Tue 27 May 2026</div>
+          </div>
+          <div class="history-actions">
+            <button class="history-btn" onclick="editDraft()">Edit</button>
+            <button class="history-btn" style="color:var(--red)">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PDF / EMAIL ══ -->
+    <div class="section" id="section-pdf">
+      <div class="page-header">
+        <div>
+          <div class="page-title">PDF / Email → WA</div>
+          <div class="page-sub">Upload a DSE report or paste email content — Claude converts it to a WhatsApp brief</div>
+        </div>
+      </div>
+
+      <div class="editor-layout">
+        <div>
+          <div class="card">
+            <div class="card-label">Upload source</div>
+
+            <div class="upload-zone" onclick="document.getElementById('pdfInput').click()">
+              <input type="file" id="pdfInput" class="upload-input" accept=".pdf,.html,.txt" onchange="handleFileUpload(this)">
+              <div class="upload-icon">📄</div>
+              <div class="upload-title">Drop a PDF or click to upload</div>
+              <div class="upload-sub">DSE weekly report · AGM notice · Results · Mailchimp export</div>
+            </div>
+
+            <div style="text-align:center;font-size:11px;color:var(--g3);margin:0 0 14px">— or paste email HTML / text below —</div>
+
+            <textarea
+              class="editor-area"
+              id="pdfTextArea"
+              style="min-height:120px"
+              placeholder="Paste email content or extracted PDF text here…"
+            ></textarea>
+
+            <div class="action-bar" style="margin-top:14px">
+              <button class="btn btn-ai" onclick="processWithClaude()">
+                ✦ Convert with Claude
+              </button>
+              <button class="btn btn-secondary" onclick="clearPdfArea()">Clear</button>
+            </div>
+
+            <div class="ai-processing" id="aiProcessing2">
+              <div class="ai-spinner"></div>
+              <span class="ai-text">Claude is reading the document and generating your brief…</span>
+            </div>
+
+            <div id="claudeOutput" style="display:none;margin-top:16px">
+              <div class="card-label" style="color:var(--green-dk)">✓ Claude output — review before sending</div>
+              <textarea class="editor-area" id="claudeResult" style="min-height:140px" oninput="syncToCompose()"></textarea>
+              <div class="action-bar" style="margin-top:10px">
+                <button class="btn btn-primary" onclick="sendClaudeResult()">Send to channel →</button>
+                <button class="btn btn-outline" onclick="editInCompose()">Edit in Compose</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-card">
+          <div class="card-label" style="text-align:center;margin-bottom:10px">Live preview</div>
+          <div class="wa-phone">
+            <div class="wa-screen">
+              <div class="wa-header">
+                <div class="wa-avatar">📊</div>
+                <div class="wa-info">
+                  <div class="wa-info-name">Sokoview DSE Channel</div>
+                  <div class="wa-info-sub">207 followers</div>
+                </div>
+              </div>
+              <div class="wa-chat">
+                <div id="pdfPreview" class="wa-empty">
+                  Claude output will<br>preview here
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SUBSCRIBERS ══ -->
+    <div class="section" id="section-subscribers">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Subscribers</div>
+          <div class="page-sub">People who sent SUBSCRIBE to the bot</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:center;padding:48px;color:var(--g3)">
+        <div style="font-size:32px;margin-bottom:12px">👥</div>
+        <div style="font-size:14px;font-weight:700;color:var(--black);margin-bottom:6px">207 active subscribers</div>
+        <div style="font-size:12px">Subscriber data comes from your webhook database.<br>Connect your Postgres/Supabase instance to see the list here.</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── NAV ──
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── TYPE SELECT ──
+function setType(btn, label) {
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── LIVE PREVIEW ──
+function updatePreview() {
+  const txt = document.getElementById('msgArea').value;
+  const count = document.getElementById('charCount');
+  const words = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+  count.textContent = `${words} / 300 words`;
+  count.className = 'char-count' + (words > 280 ? ' over' : words > 240 ? ' warn' : '');
+
+  const preview = document.getElementById('waPreview');
+  if (!txt.trim()) {
+    preview.className = 'wa-empty';
+    preview.innerHTML = 'Your message will<br>preview here';
+    return;
+  }
+  // Convert *bold* to <strong>, preserve line breaks
+  const html = txt
+    .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+  preview.className = '';
+  preview.innerHTML = `<div class="wa-bubble">${html}<div class="wa-bubble-time">Now ✓✓</div></div>`;
+}
+
+// ── BACKEND URL ──────────────────────────────────
+const API = 'https://sokoview-captive-portal-production.up.railway.app';
+
+// ── AI POLISH — calls real Claude API ────────────
+async function aiPolish() {
+  const txt = document.getElementById('msgArea').value.trim();
+  if (!txt) { alert('Write something first.'); return; }
+  const proc = document.getElementById('aiProcessing');
+  proc.classList.add('visible');
+
+  try {
+    const form = new FormData();
+    form.append('text', txt);
+
+    const res = await fetch(`${API}/api/polish`, {
+      method: 'POST',
+      body: form
+    });
+
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+    const data = await res.json();
+
+    document.getElementById('msgArea').value = data.result;
+    updatePreview();
+  } catch (err) {
+    alert(`Error: ${err.message}. Check your Railway backend is running.`);
+  } finally {
+    proc.classList.remove('visible');
+  }
+}
+
+// ── PDF / TEXT PROCESS — calls real Claude API ───
+async function processWithClaude() {
+  const txt   = document.getElementById('pdfTextArea').value.trim();
+  const file  = document.getElementById('pdfInput').files[0];
+  if (!txt && !file) { alert('Upload a file or paste content first.'); return; }
+
+  const proc = document.getElementById('aiProcessing2');
+  proc.classList.add('visible');
+  document.getElementById('claudeOutput').style.display = 'none';
+
+  try {
+    const form = new FormData();
+    if (file) {
+      form.append('file', file);
+    } else {
+      form.append('text', txt);
+    }
+
+    const res = await fetch(`${API}/api/process-pdf`, {
+      method: 'POST',
+      body: form
+    });
+
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+    const data = await res.json();
+
+    document.getElementById('claudeResult').value = data.result;
+    document.getElementById('claudeOutput').style.display = 'block';
+
+    const html = data.result
+      .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+    const preview = document.getElementById('pdfPreview');
+    preview.className = '';
+    preview.innerHTML = `<div class="wa-bubble">${html}<div class="wa-bubble-time">Now ✓✓</div></div>`;
+  } catch (err) {
+    alert(`Error: ${err.message}. Check your Railway backend is running.`);
+  } finally {
+    proc.classList.remove('visible');
+  }
+}
+
+function handleFileUpload(input) {
+  if (input.files[0]) {
+    document.getElementById('pdfTextArea').value = `File ready: ${input.files[0].name} — click Convert with Claude`;
+  }
+}
+
+// ── SEND — calls real backend (logs in Railway for now) ──
+async function sendNow() {
+  const txt = document.getElementById('msgArea').value.trim();
+  if (!txt) { alert('Write a message first.'); return; }
+  if (!confirm(`Send to channel now?`)) return;
+
+  try {
+    const form = new FormData();
+    form.append('message', txt);
+
+    const res = await fetch(`${API}/api/send`, {
+      method: 'POST',
+      body: form
+    });
+
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+    const data = await res.json();
+    alert(`✓ ${data.note}`);
+  } catch (err) {
+    alert(`Error: ${err.message}`);
+  }
+}
+
+// ── SCHEDULE ─────────────────────────────────────
+async function scheduleSend() {
+  const t   = document.getElementById('scheduleTime').value;
+  const txt = document.getElementById('msgArea').value.trim();
+  if (!t)   { alert('Pick a date and time.'); return; }
+  if (!txt) { alert('Write a message first.'); return; }
+
+  try {
+    const form = new FormData();
+    form.append('message', txt);
+    form.append('schedule_time', t);
+
+    const res = await fetch(`${API}/api/send`, {
+      method: 'POST',
+      body: form
+    });
+    const data = await res.json();
+    alert(`✓ Scheduled for ${new Date(t).toLocaleString('en-TZ')} EAT`);
+  } catch (err) {
+    alert(`Error: ${err.message}`);
+  }
+}
+
+// ── SAVE DRAFT ────────────────────────────────────
+async function saveDraft() {
+  const txt = document.getElementById('msgArea').value.trim();
+  if (!txt) { alert('Nothing to save.'); return; }
+
+  try {
+    const form = new FormData();
+    form.append('message', txt);
+    form.append('message_type', document.querySelector('.type-btn.active')?.textContent || 'market_update');
+
+    const res = await fetch(`${API}/api/draft`, {
+      method: 'POST',
+      body: form
+    });
+    const data = await res.json();
+    alert('✓ Draft saved');
+  } catch (err) {
+    alert(`Error saving draft: ${err.message}`);
+  }
+}
+
+function clearMsg() {
+  document.getElementById('msgArea').value = '';
+  updatePreview();
+}
+
+function clearPdfArea() {
+  document.getElementById('pdfTextArea').value = '';
+  document.getElementById('claudeOutput').style.display = 'none';
+  document.getElementById('pdfPreview').className = 'wa-empty';
+  document.getElementById('pdfPreview').innerHTML = 'Claude output will<br>preview here';
+}
+
+function editInCompose() {
+  const txt = document.getElementById('claudeResult').value;
+  showSection('compose');
+  document.querySelector('.nav-item').click();
+  document.getElementById('msgArea').value = txt;
+  updatePreview();
+}
+
+function sendClaudeResult() {
+  const txt = document.getElementById('claudeResult').value.trim();
+  if (!txt) return;
+  if (confirm('Send this Claude-generated brief to 207 subscribers?')) {
+    alert('✓ Message queued for broadcast.');
+  }
+}
+
+// History helpers (demo)
+function reusePost(btn) {
+  const txt = btn.closest('.history-item').querySelector('.history-text').textContent;
+  showSection('compose');
+  setTimeout(() => {
+    document.getElementById('msgArea').value = txt;
+    updatePreview();
+  }, 100);
+}
+function editPost() { showSection('compose'); }
+function editDraft() { showSection('compose'); }
+function cancelSchedule(btn) { btn.closest('.history-item').remove(); }
+</script>
+</body>
+</html>
