@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sokoview Admin · WA Channel</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -19,6 +20,109 @@
   --radius: 12px;
 }
 body { font-family: var(--font); background: var(--g6); color: var(--black); min-height: 100vh; }
+
+/* ── IMAGE CARD STYLES ── */
+.card-gen-wrap {
+  display: none;
+  margin-top: 20px;
+}
+.card-gen-wrap.visible { display: block; }
+.card-gen-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--g3); margin-bottom: 10px;
+}
+
+/* The actual 500x500 image card */
+#imageCard {
+  width: 500px; height: 500px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1.5px solid var(--g4);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Sora', sans-serif;
+  flex-shrink: 0;
+}
+#imageCard::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 60%;
+  background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(34,197,94,0.18) 0%, transparent 100%);
+  pointer-events: none; z-index: 0;
+}
+.ic-inner {
+  position: absolute; inset: 0;
+  padding: 28px 28px 24px;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  z-index: 2;
+}
+.ic-logo-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.ic-logo-mark {
+  width: 26px; height: 26px; background: #111;
+  border-radius: 6px; display: flex; align-items: flex-end;
+  gap: 2px; padding: 4px 5px;
+}
+.ic-logo-mark .b { border-radius: 1px; background: #22c55e; }
+.ic-logo-name { font-size: 13px; font-weight: 800; color: #0a0a0a; }
+.ic-date { margin-left: auto; font-size: 10px; color: #9ca3af; font-weight: 500; }
+
+.ic-eyebrow {
+  font-size: 9px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: #16a34a; margin-bottom: 8px;
+}
+.ic-headline {
+  font-size: 22px; font-weight: 800; color: #0a0a0a;
+  letter-spacing: -0.8px; line-height: 1.15; margin-bottom: 14px;
+}
+.ic-headline .hl { background: #22c55e; color: #000; border-radius: 5px; padding: 1px 7px; }
+.ic-bullets { display: flex; flex-direction: column; gap: 8px; }
+.ic-bullet {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12px; color: #374151; line-height: 1.5;
+}
+.ic-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; flex-shrink: 0; margin-top: 5px; }
+
+.ic-footer {
+  background: #22c55e;
+  margin: 0 -28px -24px;
+  padding: 10px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ic-footer-text { font-size: 10px; font-weight: 700; color: #000; letter-spacing: .06em; text-transform: uppercase; }
+.ic-footer-url  { font-size: 11px; font-weight: 700; color: #000; }
+
+/* card preview wrapper (scaled) */
+.card-preview-outer {
+  background: var(--g5); border-radius: 10px; padding: 12px;
+  display: inline-flex; flex-direction: column; align-items: center; gap: 10px;
+  border: 1px solid var(--g4);
+}
+.card-scaled {
+  transform: scale(0.52);
+  transform-origin: top left;
+  width: 500px; height: 500px;
+  flex-shrink: 0;
+}
+.card-scaled-wrap {
+  width: 260px; height: 260px;
+  overflow: hidden; border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+.btn-dl-card {
+  background: #0a0a0a; color: #fff;
+  font-family: var(--font); font-size: 12px; font-weight: 700;
+  border: none; cursor: pointer;
+  padding: 9px 20px; border-radius: 8px;
+  transition: opacity .15s; width: 100%;
+}
+.btn-dl-card:hover { opacity: .8; }
+.btn-img-card {
+  background: linear-gradient(135deg, #0a0a0a, #22c55e);
+  color: #fff; display: flex; align-items: center; gap: 6px;
+}
 
 /* ── SIDEBAR ── */
 .layout { display: flex; min-height: 100vh; }
@@ -341,6 +445,9 @@ Example:
               <button class="btn btn-ai" onclick="aiPolish()">
                 ✦ Polish with Claude
               </button>
+              <button class="btn btn-ai btn-img-card" onclick="generateImageCard()" id="btnImgCard" style="display:none">
+                🖼 Generate Image Card
+              </button>
               <button class="btn btn-secondary" onclick="clearMsg()">Clear</button>
             </div>
 
@@ -381,6 +488,72 @@ Example:
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- IMAGE CARD GENERATOR -->
+          <div class="card-gen-wrap" id="cardGenWrap">
+            <div style="height:16px"></div>
+            <div class="card-gen-label">Image card preview</div>
+            <div class="card-preview-outer">
+              <div class="card-scaled-wrap">
+                <div class="card-scaled">
+                  <!-- THE ACTUAL CARD RENDERED HERE -->
+                  <div id="imageCard">
+                    <div class="ic-inner">
+                      <div class="ic-logo-row">
+                        <div class="ic-logo-mark">
+                          <div class="b" style="width:3px;height:5px"></div>
+                          <div class="b" style="width:3px;height:8px"></div>
+                          <div class="b" style="width:3px;height:11px"></div>
+                        </div>
+                        <span class="ic-logo-name">sokoview</span>
+                        <span class="ic-date" id="icDate"></span>
+                      </div>
+                      <div>
+                        <div class="ic-eyebrow" id="icEyebrow">DSE Market Update</div>
+                        <div class="ic-headline" id="icHeadline">Headline appears here</div>
+                        <div class="ic-bullets" id="icBullets"></div>
+                      </div>
+                      <div class="ic-footer">
+                        <span class="ic-footer-text">Track smarter · Invest with confidence</span>
+                        <span class="ic-footer-url">sokoview.co.tz</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-dl-card" id="btnDownloadCard" onclick="downloadCard()">
+                ⬇ Download PNG (1080×1080)
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- HIDDEN FULL-SIZE CARD FOR EXPORT (off screen) -->
+    <div style="position:fixed;left:-9999px;top:0;z-index:-1">
+      <div id="imageCardExport" style="width:500px;height:500px;background:#fff;border-radius:12px;overflow:hidden;font-family:'Sora',sans-serif;position:relative;">
+        <div style="position:absolute;top:0;left:0;right:0;height:60%;background:radial-gradient(ellipse 100% 60% at 50% 0%,rgba(34,197,94,0.18) 0%,transparent 100%);z-index:0"></div>
+        <div style="position:absolute;inset:0;padding:28px 28px 24px;display:flex;flex-direction:column;justify-content:space-between;z-index:2">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:26px;height:26px;background:#111;border-radius:6px;display:flex;align-items:flex-end;gap:2px;padding:4px 5px">
+              <div style="width:3px;height:5px;background:#22c55e;border-radius:1px"></div>
+              <div style="width:3px;height:8px;background:#22c55e;border-radius:1px"></div>
+              <div style="width:3px;height:11px;background:#22c55e;border-radius:1px"></div>
+            </div>
+            <span style="font-size:13px;font-weight:800;color:#0a0a0a">sokoview</span>
+            <span id="icDateEx" style="margin-left:auto;font-size:10px;color:#9ca3af;font-weight:500"></span>
+          </div>
+          <div>
+            <div id="icEyebrowEx" style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#16a34a;margin-bottom:8px">DSE Market Update</div>
+            <div id="icHeadlineEx" style="font-size:22px;font-weight:800;color:#0a0a0a;letter-spacing:-0.8px;line-height:1.15;margin-bottom:14px"></div>
+            <div id="icBulletsEx" style="display:flex;flex-direction:column;gap:8px"></div>
+          </div>
+          <div style="background:#22c55e;margin:0 -28px -24px;padding:10px 28px;display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:10px;font-weight:700;color:#000;letter-spacing:.06em;text-transform:uppercase">Track smarter · Invest with confidence</span>
+            <span style="font-size:11px;font-weight:700;color:#000">sokoview.co.tz</span>
           </div>
         </div>
       </div>
@@ -599,6 +772,7 @@ async function aiPolish() {
 
     document.getElementById('msgArea').value = data.result;
     updatePreview();
+    document.getElementById('btnImgCard').style.display = 'flex';
   } catch (err) {
     alert(`Error: ${err.message}. Check your Railway backend is running.`);
   } finally {
@@ -723,7 +897,107 @@ async function saveDraft() {
 
 function clearMsg() {
   document.getElementById('msgArea').value = '';
+  document.getElementById('btnImgCard').style.display = 'none';
+  document.getElementById('cardGenWrap').classList.remove('visible');
   updatePreview();
+}
+
+// ── IMAGE CARD GENERATOR ─────────────────────────
+function generateImageCard() {
+  const txt = document.getElementById('msgArea').value.trim();
+  if (!txt) { alert('Write or generate a message first.'); return; }
+
+  const lines = txt.split('\n').filter(l => l.trim());
+  const msgType = document.querySelector('.type-btn.active')?.textContent?.trim() || '📈 Market update';
+
+  // Extract headline — first non-empty line, strip asterisks
+  const headline = lines[0].replace(/\*/g, '').trim();
+
+  // Extract bullets — lines starting with •
+  const bullets = lines
+    .slice(1)
+    .filter(l => l.trim().startsWith('•'))
+    .map(l => l.replace(/^•\s*/, '').replace(/\*/g, '').trim())
+    .slice(0, 4);
+
+  // Eyebrow from message type
+  const eyebrowMap = {
+    '📈 Market update': 'DSE Market Update',
+    '💰 Dividend alert': 'Dividend Alert',
+    '🔔 Market short': 'Market Short',
+    '📰 News': 'DSE News',
+    '🚀 Custom': 'Sokoview Update',
+  };
+  const eyebrow = eyebrowMap[msgType] || 'DSE Update';
+  const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  // ── Update preview card ──
+  document.getElementById('icEyebrow').textContent  = eyebrow;
+  document.getElementById('icDate').textContent     = dateStr;
+  document.getElementById('icHeadline').innerHTML   = formatHeadline(headline);
+
+  const bulletsEl = document.getElementById('icBullets');
+  bulletsEl.innerHTML = bullets.map(b =>
+    `<div class="ic-bullet"><div class="ic-dot"></div><span>${b}</span></div>`
+  ).join('');
+
+  // ── Update export card (full size, off screen) ──
+  document.getElementById('icEyebrowEx').textContent  = eyebrow;
+  document.getElementById('icDateEx').textContent     = dateStr;
+  document.getElementById('icHeadlineEx').innerHTML   = formatHeadline(headline);
+
+  const bulletsEx = document.getElementById('icBulletsEx');
+  bulletsEx.innerHTML = bullets.map(b =>
+    `<div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#374151;line-height:1.5">
+      <div style="width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0;margin-top:5px"></div>
+      <span>${b}</span>
+    </div>`
+  ).join('');
+
+  // Show card panel
+  document.getElementById('cardGenWrap').classList.add('visible');
+}
+
+function formatHeadline(text) {
+  // Wrap first strong phrase in green highlight
+  if (text.length < 40) {
+    const words = text.split(' ');
+    const split = Math.ceil(words.length / 2);
+    const first = words.slice(0, split).join(' ');
+    const rest  = words.slice(split).join(' ');
+    return rest
+      ? `<span class="hl">${first}</span> ${rest}`
+      : `<span class="hl">${first}</span>`;
+  }
+  return text;
+}
+
+function downloadCard() {
+  const btn = document.getElementById('btnDownloadCard');
+  btn.textContent = 'Rendering…'; btn.disabled = true;
+
+  const card = document.getElementById('imageCardExport');
+
+  html2canvas(card, {
+    scale: 3,
+    useCORS: true,
+    backgroundColor: '#ffffff',
+    logging: false,
+    width: 500,
+    height: 500
+  }).then(canvas => {
+    const a = document.createElement('a');
+    const date = new Date().toISOString().slice(0,10);
+    a.download = `Sokoview_DSE_${date}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    btn.textContent = '✓ Downloaded — post to your WA Channel';
+    btn.disabled = false;
+    setTimeout(() => { btn.textContent = '⬇ Download PNG (1080×1080)'; }, 3000);
+  }).catch(err => {
+    btn.textContent = '⬇ Download PNG (1080×1080)';
+    btn.disabled = false;
+  });
 }
 
 function clearPdfArea() {
