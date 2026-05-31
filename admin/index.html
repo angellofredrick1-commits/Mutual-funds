@@ -521,7 +521,7 @@ body { font-family: var(--font); background: var(--g6); color: var(--black); min
 
 Use *asterisks* for bold in WhatsApp
 Use line breaks for readability
-Keep it under 300 words
+Keep it under 150 words (WA Channel limit)
 
 Example:
 *CRDB hits TZS 2,780 — up 77% YTD*
@@ -827,8 +827,8 @@ function updatePreview() {
   const txt = document.getElementById('msgArea').value;
   const count = document.getElementById('charCount');
   const words = txt.trim() ? txt.trim().split(/\s+/).length : 0;
-  count.textContent = `${words} / 300 words`;
-  count.className = 'char-count' + (words > 280 ? ' over' : words > 240 ? ' warn' : '');
+  count.textContent = `${words} / 150 words`;
+  count.className = 'char-count' + (words > 140 ? ' over' : words > 120 ? ' warn' : '');
 
   const preview = document.getElementById('waPreview');
   if (!txt.trim()) {
