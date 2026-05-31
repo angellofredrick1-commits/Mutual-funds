@@ -37,7 +37,7 @@ who follow the Dar es Salaam Stock Exchange.
 STRICT FORMATTING RULES for WhatsApp:
 - Use *asterisks* for bold — e.g. *CRDB up 2.3% today*
 - Use • for bullet points — one space after the bullet
-- Maximum 250 words total
+- Maximum 150 words total
 - No markdown headers (no #, ##, ###)
 - No hashtags
 - No emojis unless specifically asked
