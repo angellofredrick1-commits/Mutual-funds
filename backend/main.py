@@ -90,7 +90,7 @@ async def polish(text: str = Form(...)):
 
     try:
         msg = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-sonnet-4-5",
             max_tokens=1000,
             system=SYSTEM_PROMPT,
             messages=[
@@ -155,7 +155,7 @@ async def process_pdf(
             pdf_data = base64.standard_b64encode(contents).decode("utf-8")
 
             msg = client.messages.create(
-                model="claude-sonnet-4-20250514",
+                model="claude-sonnet-4-5",
                 max_tokens=1000,
                 system=SYSTEM_PROMPT,
                 messages=[
@@ -189,7 +189,7 @@ impactful information for a retail DSE investor."""
         # ── Pasted text (email, copied content) ───
         else:
             msg = client.messages.create(
-                model="claude-sonnet-4-20250514",
+                model="claude-sonnet-4-5",
                 max_tokens=1000,
                 system=SYSTEM_PROMPT,
                 messages=[
