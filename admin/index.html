@@ -3,9 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sokoview Admin · WA Channel</title>
+<title>Sokoview Admin · Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --green: #22c55e; --font: 'Sora', sans-serif; }
+
+/* ── LOGIN SCREEN ── */
+#loginScreen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #0a0a0a;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font);
+}
+.login-card {
+  width: 360px;
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 16px;
+  padding: 40px 36px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.login-logo {
+  display: flex; align-items: center; gap: 9px; margin-bottom: 32px;
+}
+.login-mark {
+  width: 32px; height: 32px; background: #1a1a1a;
+  border-radius: 8px; border: 1px solid #2a2a2a;
+  display: flex; align-items: flex-end; gap: 2.5px; padding: 5px 6px;
+}
+.login-mark .b { border-radius: 1px; background: var(--green); }
+.login-name { font-size: 16px; font-weight: 800; color: #fff; }
+.login-badge {
+  font-size: 9px; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--green);
+  background: rgba(34,197,94,.1); padding: 2px 7px; border-radius: 4px;
+  margin-left: 4px;
+}
+.login-title {
+  font-size: 14px; font-weight: 600; color: #fff;
+  margin-bottom: 6px; text-align: center;
+}
+.login-sub {
+  font-size: 12px; color: #555; margin-bottom: 28px; text-align: center;
+}
+.login-input {
+  width: 100%; background: #0d0d0d; border: 1.5px solid #222;
+  border-radius: 10px; padding: 13px 16px;
+  font-family: var(--font); font-size: 14px; color: #fff;
+  outline: none; transition: border-color .15s; margin-bottom: 12px;
+  letter-spacing: .1em;
+}
+.login-input:focus { border-color: var(--green); }
+.login-input::placeholder { color: #333; letter-spacing: 0; }
+.login-btn {
+  width: 100%; background: var(--green); color: #000;
+  font-family: var(--font); font-size: 14px; font-weight: 700;
+  border: none; border-radius: 10px; padding: 13px;
+  cursor: pointer; transition: opacity .15s;
+}
+.login-btn:hover { opacity: .85; }
+.login-error {
+  font-size: 12px; color: #ef4444; margin-top: 10px;
+  text-align: center; display: none;
+}
+.login-error.show { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ── -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-mark">
+        <div class="b" style="width:3.5px;height:6px"></div>
+        <div class="b" style="width:3.5px;height:10px"></div>
+        <div class="b" style="width:3.5px;height:14px"></div>
+      </div>
+      <span class="login-name">sokoview</span>
+      <span class="login-badge">Admin</span>
+    </div>
+    <div class="login-title">Welcome back</div>
+    <div class="login-sub">Enter your admin password to continue</div>
+    <input
+      class="login-input"
+      type="password"
+      id="pwInput"
+      placeholder="Password"
+      onkeydown="if(event.key==='Enter') checkPassword()"
+      autocomplete="current-password"
+    />
+    <button class="login-btn" onclick="checkPassword()">Unlock Admin Panel →</button>
+    <div class="login-error" id="loginError">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- ── ADMIN PANEL (hidden until login) ── -->
+<div id="adminApp" style="display:none">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -1035,6 +1131,65 @@ function reusePost(btn) {
 function editPost() { showSection('compose'); }
 function editDraft() { showSection('compose'); }
 function cancelSchedule(btn) { btn.closest('.history-item').remove(); }
+
+// ══════════════════════════════════════════════════
+// PASSWORD GATE
+// SHA-256 hash of your password.
+// Current password: Sokoview2026!
+// To change: run this in browser console:
+//   crypto.subtle.digest('SHA-256', new TextEncoder().encode('YourNewPassword'))
+//     .then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+// ══════════════════════════════════════════════════
+const CORRECT_HASH = 'cc5815636c9a845042461f8dffd31408101f9536bab05f47981ed193972ad8b6';
+
+async function checkPassword() {
+  const input = document.getElementById('pwInput').value;
+  if (!input) return;
+
+  const encoded = new TextEncoder().encode(input);
+  const hashBuf = await crypto.subtle.digest('SHA-256', encoded);
+  const hashHex = [...new Uint8Array(hashBuf)]
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  if (hashHex === CORRECT_HASH) {
+    // ✅ Correct — unlock
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+    // Remember for this session
+    sessionStorage.setItem('sokoview_authed', '1');
+  } else {
+    // ❌ Wrong — shake and show error
+    const card = document.querySelector('.login-card');
+    card.style.animation = 'shake 0.4s ease';
+    setTimeout(() => card.style.animation = '', 400);
+    document.getElementById('loginError').classList.add('show');
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+// Check session on load — skip login if already authed this session
+window.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('sokoview_authed') === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+  } else {
+    document.getElementById('pwInput').focus();
+  }
+});
 </script>
+
+<style>
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-10px); }
+  40%      { transform: translateX(10px); }
+  60%      { transform: translateX(-8px); }
+  80%      { transform: translateX(8px); }
+}
+</style>
+
+</div><!-- end adminApp -->
 </body>
 </html>
