@@ -477,6 +477,25 @@ footer {
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
+/* ─── LANGUAGE TOGGLE ─── */
+.lang-toggle {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--gray-5); border-radius: 100px;
+  padding: 3px; margin-left: auto;
+  border: 1px solid var(--gray-4);
+}
+.lang-btn {
+  font-size: 11px; font-weight: 700;
+  padding: 5px 12px; border-radius: 100px;
+  border: none; cursor: pointer; background: none;
+  color: var(--gray-3); font-family: var(--font);
+  transition: all .15s; letter-spacing: .04em;
+}
+.lang-btn.active {
+  background: var(--white); color: var(--black);
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+
 /* ─── MOBILE TWEAKS ─── */
 @media (max-width: 400px) {
   .hero-title { font-size: 34px; }
@@ -487,7 +506,7 @@ footer {
 <body>
 
 <!-- NAV -->
-<nav>
+<nav style="justify-content:space-between">
   <div class="nav-logo">
     <div class="nav-mark">
       <div class="b" style="width:3.5px;height:6px"></div>
@@ -495,6 +514,10 @@ footer {
       <div class="b" style="width:3.5px;height:14px"></div>
     </div>
     <span class="nav-name">sokoview</span>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+    <button class="lang-btn active" onclick="setLang('sw')" id="btn-sw">SW</button>
   </div>
 </nav>
 
@@ -505,14 +528,14 @@ footer {
 
       <div class="hero-pill">
         <div class="hero-pill-dot"></div>
-        WhatsApp Channel
+        <span data-en="WhatsApp Channel" data-sw="Kituo cha WhatsApp">WhatsApp Channel</span>
       </div>
 
       <h1 class="hero-title">
-        The DSE in<br>your pocket.<br><span class="hl">Daily.</span>
+        <span data-en="The DSE in<br>your pocket.<br>" data-sw="DSE mfukoni<br>mwako.<br>">The DSE in<br>your pocket.<br></span><span class="hl" data-en="Daily." data-sw="Kila Siku.">Daily.</span>
       </h1>
 
-      <p class="hero-sub">
+      <p class="hero-sub" data-en="Get live DSE market updates, dividend alerts, and top stock insights — delivered straight to WhatsApp. Free." data-sw="Pata habari za soko la DSE, arifa za gawio, na uchambuzi wa hisa — moja kwa moja kwenye WhatsApp. Bure.">
         Get live DSE market updates, dividend alerts, and top stock insights — delivered straight to WhatsApp. Free.
       </p>
 
@@ -520,14 +543,13 @@ footer {
         <a class="cta-btn"
            href="https://wa.me/255700000000?text=SUBSCRIBE"
            target="_blank" rel="noopener">
-          <!-- WhatsApp icon -->
           <svg class="cta-icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
           </svg>
-          Join on WhatsApp — It's Free
+          <span data-en="Join on WhatsApp — It's Free" data-sw="Jiunge WhatsApp — Bila Malipo">Join on WhatsApp — It's Free</span>
         </a>
       </div>
-      <p class="cta-note">Opens WhatsApp · No app download needed · Unsubscribe anytime</p>
+      <p class="cta-note" data-en="Opens WhatsApp · No app download needed · Unsubscribe anytime" data-sw="Inafungua WhatsApp · Hakuna programu ya kupakua · Jitoe wakati wowote">Opens WhatsApp · No app download needed · Unsubscribe anytime</p>
 
       <!-- PHONE MOCKUP -->
       <div class="phone-wrap">
@@ -584,50 +606,50 @@ footer {
 <div class="proof-strip reveal">
   <div class="proof-item">
     <div class="proof-num">207<span>+</span></div>
-    <div class="proof-lbl">Subscribers</div>
+    <div class="proof-lbl" data-en="Subscribers" data-sw="Wanachama">Subscribers</div>
   </div>
   <div class="proof-item">
     <div class="proof-num"><span>5</span>x</div>
-    <div class="proof-lbl">Per week</div>
+    <div class="proof-lbl" data-en="Per week" data-sw="Kwa wiki">Per week</div>
   </div>
   <div class="proof-item">
     <div class="proof-num"><span>Free</span></div>
-    <div class="proof-lbl">Always</div>
+    <div class="proof-lbl" data-en="Always" data-sw="Daima">Always</div>
   </div>
 </div>
 
 <!-- FEATURES -->
 <section class="features reveal">
-  <div class="features-label">What you get</div>
-  <h2 class="features-title">Everything about the <span>DSE</span> — without the noise.</h2>
+  <div class="features-label" data-en="What you get" data-sw="Unachopata">What you get</div>
+  <h2 class="features-title" data-en="Everything about the <span>DSE</span> — without the noise." data-sw="Kila kitu kuhusu <span>DSE</span> — bila kelele.">Everything about the <span>DSE</span> — without the noise.</h2>
 
   <div class="feat-list">
     <div class="feat-item">
       <div class="feat-icon">📈</div>
       <div>
-        <div class="feat-title">Daily Market Briefings</div>
-        <div class="feat-sub">Top movers, volume leaders, and price alerts — every morning before the opening bell.</div>
+        <div class="feat-title" data-en="Daily Market Briefings" data-sw="Taarifa za Soko Kila Siku">Daily Market Briefings</div>
+        <div class="feat-sub" data-en="Top movers, volume leaders, and price alerts — every morning before the opening bell." data-sw="Hisa zinazosonga zaidi, viongozi vya kiasi, na arifa za bei — kila asubuhi kabla ya soko kufungua.">Top movers, volume leaders, and price alerts — every morning before the opening bell.</div>
       </div>
     </div>
     <div class="feat-item">
       <div class="feat-icon">💰</div>
       <div>
-        <div class="feat-title">Dividend Alerts</div>
-        <div class="feat-sub">Never miss an AGM, book closure date, or dividend payment again. We track all 17 listed companies.</div>
+        <div class="feat-title" data-en="Dividend Alerts" data-sw="Taarifa za Gawio">Dividend Alerts</div>
+        <div class="feat-sub" data-en="Never miss an AGM, book closure date, or dividend payment again. We track all 17 listed companies." data-sw="Usikose AGM, tarehe ya kufunga daftari, au malipo ya gawio tena. Tunafuatilia makampuni yote 17 yaliyoorodheshwa.">Never miss an AGM, book closure date, or dividend payment again. We track all 17 listed companies.</div>
       </div>
     </div>
     <div class="feat-item">
       <div class="feat-icon">🏆</div>
       <div>
-        <div class="feat-title">Top Sector Picks</div>
-        <div class="feat-sub">Which stock is leading its sector this week? We break it down — simply, clearly, in plain Swahili and English.</div>
+        <div class="feat-title" data-en="Top Sector Picks" data-sw="Hisa Bora kwa Sekta">Top Sector Picks</div>
+        <div class="feat-sub" data-en="Which stock is leading its sector this week? We break it down — simply, clearly, in plain Swahili and English." data-sw="Hisa ipi inaongoza sekta yake wiki hii?">Which stock is leading its sector this week? We break it down — simply, clearly, in plain Swahili and English.</div>
       </div>
     </div>
     <div class="feat-item">
       <div class="feat-icon">🔔</div>
       <div>
-        <div class="feat-title">Instant Notifications</div>
-        <div class="feat-sub">WhatsApp delivers straight to your lock screen. No app to download, no login required.</div>
+        <div class="feat-title" data-en="Instant Notifications" data-sw="Taarifa za Papo Hapo">Instant Notifications</div>
+        <div class="feat-sub" data-en="WhatsApp delivers straight to your lock screen. No app to download, no login required." data-sw="Pokea tarifa moja kwa moja WhatsApp yako. Hakuna programu ya kupakua, hakuna malipo.">WhatsApp delivers straight to your lock screen. No app to download, no login required.</div>
       </div>
     </div>
   </div>
@@ -636,28 +658,28 @@ footer {
 <!-- HOW IT WORKS -->
 <section class="how">
   <div class="how-inner reveal">
-    <div class="how-label">How it works</div>
-    <h2 class="how-title">Subscribed in <span>3 taps.</span></h2>
+    <div class="how-label" data-en="How it works" data-sw="Jinsi inavyofanya kazi">How it works</div>
+    <h2 class="how-title" data-en="Subscribed in <span>3 taps.</span>" data-sw="Jiunge kwa hatua 3.">Subscribed in <span>3 taps.</span></h2>
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-content">
-          <div class="step-title">Tap "Join on WhatsApp"</div>
-          <div class="step-sub">Opens WhatsApp with the message "SUBSCRIBE" pre-typed — ready to send.</div>
+          <div class="step-title" data-en='Tap "Join on WhatsApp"' data-sw="Bonyeza — Jiunge WhatsApp">Tap "Join on WhatsApp"</div>
+          <div class="step-sub" data-en='Opens WhatsApp with the message "SUBSCRIBE" pre-typed — ready to send.' data-sw="Inafungua WhatsApp na ujumbe &quot;SUBSCRIBE&quot; umewekwa tayari — tayari kutumwa.">Opens WhatsApp with the message "SUBSCRIBE" pre-typed — ready to send.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
-          <div class="step-title">Send the message</div>
-          <div class="step-sub">Our bot instantly replies with your personal invite link to the Sokoview DSE Channel.</div>
+          <div class="step-title" data-en="Send the message" data-sw="Tuma ujumbe">Send the message</div>
+          <div class="step-sub" data-en="Our bot instantly replies with your personal invite link to the Sokoview DSE Channel." data-sw="Bot yetu inajibu mara moja na kiungo chako cha mwaliko cha channel yetu ya Sokoview.">Our bot instantly replies with your personal invite link to the Sokoview DSE Channel.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-content">
-          <div class="step-title">Tap the link, join the channel</div>
-          <div class="step-sub">You're in. Daily DSE intelligence starts hitting your WhatsApp immediately.</div>
+          <div class="step-title" data-en="Tap the link, join the channel" data-sw="Bonyeza kiungo, jiunge na channel">Tap the link, join the channel</div>
+          <div class="step-sub" data-en="You're in. Daily DSE intelligence starts hitting your WhatsApp immediately." data-sw="Umefika. Habari za kila siku za DSE zinaanza kuja WhatsApp yako moja kwa moja.">You're in. Daily DSE intelligence starts hitting your WhatsApp immediately.</div>
         </div>
       </div>
     </div>
@@ -667,8 +689,8 @@ footer {
 <!-- BOTTOM CTA -->
 <section class="bottom-cta reveal">
   <div class="bottom-cta-inner">
-    <h2 class="bottom-cta-title">Start tracking the DSE <span>today.</span></h2>
-    <p class="bottom-cta-sub">Join 207+ investors already receiving daily DSE intelligence on WhatsApp. Free, forever.</p>
+    <h2 class="bottom-cta-title" data-en="Start tracking the DSE <span>today.</span>" data-sw="Anza kufuatilia DSE <span>leo.</span>">Start tracking the DSE <span>today.</span></h2>
+    <p class="bottom-cta-sub" data-en="Join 207+ investors already receiving daily DSE intelligence on WhatsApp. Free, forever." data-sw="Jiunge na wawekezaji 207+ wanaopokea habari za kila siku za DSE kwenye WhatsApp. Bure, milele.">Join 207+ investors already receiving daily DSE intelligence on WhatsApp. Free, forever.</p>
     <a class="cta-btn"
        href="https://wa.me/255700000000?text=SUBSCRIBE"
        target="_blank" rel="noopener"
@@ -676,7 +698,7 @@ footer {
       <svg class="cta-icon" viewBox="0 0 24 24" fill="currentColor">
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
       </svg>
-      Join on WhatsApp — It's Free
+      <span data-en="Join on WhatsApp — It's Free" data-sw="Jiunge WhatsApp — Bila Malipo">Join on WhatsApp — It's Free</span>
     </a>
   </div>
 </section>
@@ -691,11 +713,31 @@ footer {
     </div>
     <span class="footer-name">sokoview</span>
   </div>
-  <div class="footer-note">sokoview.co.tz · DSE Investment Portfolio Tracker · Tanzania</div>
+  <div class="footer-note" data-en="sokoview.co.tz · DSE Investment Portfolio Tracker · Tanzania" data-sw="sokoview.co.tz · Mfuatiliaji wa Hisa za DSE · Tanzania">sokoview.co.tz · DSE Investment Portfolio Tracker · Tanzania</div>
 </footer>
 
 <script>
-// Scroll reveal
+// ── LANGUAGE TOGGLE ───────────────────────────────
+function setLang(lang) {
+  // Update button states
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.getElementById('btn-sw').classList.toggle('active', lang === 'sw');
+
+  // Update all elements with data-en / data-sw attributes
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const text = el.getAttribute(`data-${lang}`);
+    if (text) el.innerHTML = text;
+  });
+
+  // Store preference
+  localStorage.setItem('sokoview_lang', lang);
+}
+
+// Apply saved language on load — default is SW
+const savedLang = localStorage.getItem('sokoview_lang') || 'sw';
+if (savedLang === 'sw') setLang('sw');
+
+// ── SCROLL REVEAL ─────────────────────────────────
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(el => {
     if (el.isIntersecting) {
