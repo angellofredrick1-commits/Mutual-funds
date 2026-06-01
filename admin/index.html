@@ -478,6 +478,9 @@ body { font-family: var(--font); background: var(--g6); color: var(--black); min
     <div class="sidebar-foot">
       <div class="sidebar-foot-label">Channel status</div>
       <div class="sidebar-foot-val">● Live · 207 followers</div>
+      <button onclick="logout()" style="margin-top:12px;width:100%;background:none;border:1px solid #2a2a2a;border-radius:7px;padding:7px;font-family:'Sora',sans-serif;font-size:11px;font-weight:600;color:#555;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='#ef4444';this.style.color='#ef4444'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='#555'">
+        Log out
+      </button>
     </div>
   </aside>
 
@@ -1132,6 +1135,11 @@ function editPost() { showSection('compose'); }
 function editDraft() { showSection('compose'); }
 function cancelSchedule(btn) { btn.closest('.history-item').remove(); }
 
+function logout() {
+  localStorage.removeItem('sokoview_authed');
+  location.reload();
+}
+
 // ══════════════════════════════════════════════════
 // PASSWORD GATE
 // SHA-256 hash of your password.
@@ -1157,7 +1165,7 @@ async function checkPassword() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminApp').style.display = 'block';
     // Remember for this session
-    sessionStorage.setItem('sokoview_authed', '1');
+    localStorage.setItem('sokoview_authed', '1');
   } else {
     // ❌ Wrong — shake and show error
     const card = document.querySelector('.login-card');
@@ -1171,7 +1179,7 @@ async function checkPassword() {
 
 // Check session on load — skip login if already authed this session
 window.addEventListener('DOMContentLoaded', () => {
-  if (sessionStorage.getItem('sokoview_authed') === '1') {
+  if (localStorage.getItem('sokoview_authed') === '1') {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminApp').style.display = 'block';
   } else {
