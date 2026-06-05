@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from anthropic import Anthropic
 import os, base64, json
@@ -76,8 +76,6 @@ async def health():
 # ══════════════════════════════════════════════════
 # ROUTE 2 — POLISH TEXT
 # POST /api/polish
-# Takes raw admin-written text and returns a
-# clean, WhatsApp-formatted market update
 # ══════════════════════════════════════════════════
 @app.post("/api/polish")
 async def polish(text: str = Form(...)):
@@ -122,10 +120,6 @@ the clarity, structure, and WhatsApp formatting:
 # ══════════════════════════════════════════════════
 # ROUTE 3 — PROCESS PDF OR EMAIL TEXT
 # POST /api/process-pdf
-# Accepts either:
-#   - A PDF file upload (multipart/form-data)
-#   - Raw pasted text (from email or copied content)
-# Returns a WhatsApp-ready market brief
 # ══════════════════════════════════════════════════
 @app.post("/api/process-pdf")
 async def process_pdf(
@@ -143,7 +137,6 @@ async def process_pdf(
         )
 
     try:
-        # ── PDF file uploaded ──────────────────────
         if file:
             if not file.filename.endswith(".pdf"):
                 raise HTTPException(
@@ -186,7 +179,6 @@ impactful information for a retail DSE investor."""
                 ]
             )
 
-        # ── Pasted text (email, copied content) ───
         else:
             msg = client.messages.create(
                 model="claude-sonnet-4-5",
@@ -224,34 +216,23 @@ formatting rules.
 # ══════════════════════════════════════════════════
 # ROUTE 4 — SEND MESSAGE
 # POST /api/send
-# Phase 1: logs the message to Railway console
-# Phase 4: will call Meta Cloud API to broadcast
 # ══════════════════════════════════════════════════
 @app.post("/api/send")
 async def send(
     message: str = Form(...),
     schedule_time: str = Form(None)
 ):
-    """
-    Phase 1: Logs the message — you copy-paste to WA manually.
-    Phase 4: This route will call Meta Cloud API POST /messages.
-    """
     if not message or not message.strip():
         raise HTTPException(status_code=400, detail="Message cannot be empty")
 
     timestamp = datetime.utcnow().isoformat()
 
-    # Log to Railway console so you can see it
     print("=" * 50)
     print(f"[SOKOVIEW SEND] {timestamp}")
     if schedule_time:
         print(f"[SCHEDULED FOR] {schedule_time}")
     print(f"[MESSAGE]\n{message}")
     print("=" * 50)
-
-    # Phase 4 — uncomment when Meta API is ready:
-    # wa_response = send_to_whatsapp_channel(message)
-    # return {"status": "sent", "wa_response": wa_response}
 
     return {
         "status": "queued",
@@ -262,20 +243,14 @@ async def send(
 
 
 # ══════════════════════════════════════════════════
-# ROUTE 5 — SAVE DRAFT  
+# ROUTE 5 — SAVE DRAFT
 # POST /api/draft
-# Phase 1: returns confirmation
-# Phase 2: will save to Supabase
 # ══════════════════════════════════════════════════
 @app.post("/api/draft")
 async def save_draft(
     message: str = Form(...),
     message_type: str = Form("market_update")
 ):
-    """
-    Phase 1: Confirms draft saved (no DB yet).
-    Phase 2: Will save to Supabase daily_briefs table.
-    """
     if not message or not message.strip():
         raise HTTPException(status_code=400, detail="Message cannot be empty")
 
@@ -284,12 +259,44 @@ async def save_draft(
     print(f"[DRAFT SAVED] {timestamp} | type: {message_type}")
     print(f"{message[:100]}...")
 
-    # Phase 2 — uncomment when Supabase is ready:
-    # save_to_supabase(message, message_type, timestamp)
-
     return {
         "status": "saved",
         "timestamp": timestamp,
         "message_type": message_type,
         "note": "Phase 2 — will persist to Supabase database"
     }
+
+
+# ══════════════════════════════════════════════════
+# ROUTE 6 — WHATSAPP WEBHOOK
+# GET  /webhook  — Meta verification
+# POST /webhook  — incoming messages
+# ══════════════════════════════════════════════════
+WA_WEBHOOK_SECRET = os.environ.get("WA_WEBHOOK_SECRET", "sokoview_verify_token")
+
+@app.get("/webhook")
+async def verify_webhook(
+    hub_mode: str = Query(None, alias="hub.mode"),
+    hub_challenge: str = Query(None, alias="hub.challenge"),
+    hub_verify_token: str = Query(None, alias="hub.verify_token")
+):
+    """
+    Meta calls this endpoint to verify your webhook.
+    It sends hub.mode, hub.challenge, and hub.verify_token.
+    We check the token matches and return the challenge.
+    """
+    if hub_mode == "subscribe" and hub_verify_token == WA_WEBHOOK_SECRET:
+        return int(hub_challenge)
+    raise HTTPException(status_code=403, detail="Verification failed")
+
+
+@app.post("/webhook")
+async def receive_webhook(request: Request):
+    """
+    Meta sends incoming messages and status updates here.
+    Phase 1: just logs them.
+    Phase 4: will process and trigger responses.
+    """
+    data = await request.json()
+    print(f"[WEBHOOK RECEIVED] {json.dumps(data)}")
+    return {"status": "ok"}
