@@ -1,7 +1,8 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from anthropic import Anthropic
-import os, base64, json
+from supabase import create_client, Client
+import os, base64, json, httpx
 from datetime import datetime
 
 # ── APP SETUP ─────────────────────────────────────
@@ -13,15 +14,26 @@ app = FastAPI(
 
 client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-# ── CORS — allow your Netlify domain ──────────────
+# ── SUPABASE SETUP ────────────────────────────────
+supabase: Client = create_client(
+    os.environ.get("SUPABASE_URL"),
+    os.environ.get("SUPABASE_SECRET")
+)
+
+# ── WHATSAPP CONFIG ───────────────────────────────
+WA_TOKEN = os.environ.get("WA_TOKEN")
+WA_PHONE_ID = os.environ.get("WA_PHONE_ID")
+WA_WEBHOOK_SECRET = os.environ.get("WA_WEBHOOK_SECRET", "sokoview_verify_token")
+
+# ── CORS ──────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://trysokoview.today",
         "https://www.trysokoview.today",
-        "https://*.netlify.app",   # covers Netlify preview URLs
-        "http://localhost:3000",   # local testing
-        "http://localhost:5500",   # VS Code live server
+        "https://*.netlify.app",
+        "http://localhost:3000",
+        "http://localhost:5500",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -60,8 +72,49 @@ TONE:
 
 
 # ══════════════════════════════════════════════════
+# HELPER — SEND WHATSAPP MESSAGE
+# ══════════════════════════════════════════════════
+async def send_whatsapp_message(to: str, message: str):
+    """Send a plain text WhatsApp message via Meta Cloud API."""
+    url = f"https://graph.facebook.com/v25.0/{WA_PHONE_ID}/messages"
+    headers = {
+        "Authorization": f"Bearer {WA_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": to,
+        "type": "text",
+        "text": {"body": message}
+    }
+    async with httpx.AsyncClient() as http:
+        response = await http.post(url, headers=headers, json=payload)
+        print(f"[WA SEND] {response.status_code} → {response.text}")
+        return response
+
+
+# ══════════════════════════════════════════════════
+# HELPER — SAVE SUBSCRIBER TO SUPABASE
+# ══════════════════════════════════════════════════
+async def save_subscriber(phone: str, name: str = None):
+    """
+    Upsert a subscriber into the subscribers table.
+    Uses phone as unique key — won't duplicate.
+    """
+    try:
+        result = supabase.table("subscribers").upsert(
+            {"phone": phone, "name": name, "is_active": True},
+            on_conflict="phone"
+        ).execute()
+        print(f"[SUBSCRIBER SAVED] {phone}")
+        return result
+    except Exception as e:
+        print(f"[SUBSCRIBER ERROR] {e}")
+        return None
+
+
+# ══════════════════════════════════════════════════
 # ROUTE 1 — HEALTH CHECK
-# GET /
 # ══════════════════════════════════════════════════
 @app.get("/")
 async def health():
@@ -79,10 +132,6 @@ async def health():
 # ══════════════════════════════════════════════════
 @app.post("/api/polish")
 async def polish(text: str = Form(...)):
-    """
-    Takes rough text written by admin,
-    polishes it into a WhatsApp-ready brief.
-    """
     if not text or not text.strip():
         raise HTTPException(status_code=400, detail="Text cannot be empty")
 
@@ -126,10 +175,6 @@ async def process_pdf(
     file: UploadFile = File(None),
     text: str = Form(None)
 ):
-    """
-    Converts a DSE PDF report or pasted email content
-    into a WhatsApp-ready market brief using Claude.
-    """
     if not file and not text:
         raise HTTPException(
             status_code=400,
@@ -269,22 +314,15 @@ async def save_draft(
 
 # ══════════════════════════════════════════════════
 # ROUTE 6 — WHATSAPP WEBHOOK
-# GET  /webhook  — Meta verification
-# POST /webhook  — incoming messages
+# GET  /webhook — Meta verification
+# POST /webhook — incoming messages
 # ══════════════════════════════════════════════════
-WA_WEBHOOK_SECRET = os.environ.get("WA_WEBHOOK_SECRET", "sokoview_verify_token")
-
 @app.get("/webhook")
 async def verify_webhook(
     hub_mode: str = Query(None, alias="hub.mode"),
     hub_challenge: str = Query(None, alias="hub.challenge"),
     hub_verify_token: str = Query(None, alias="hub.verify_token")
 ):
-    """
-    Meta calls this endpoint to verify your webhook.
-    It sends hub.mode, hub.challenge, and hub.verify_token.
-    We check the token matches and return the challenge.
-    """
     if hub_mode == "subscribe" and hub_verify_token == WA_WEBHOOK_SECRET:
         return int(hub_challenge)
     raise HTTPException(status_code=403, detail="Verification failed")
@@ -292,11 +330,94 @@ async def verify_webhook(
 
 @app.post("/webhook")
 async def receive_webhook(request: Request):
-    """
-    Meta sends incoming messages and status updates here.
-    Phase 1: just logs them.
-    Phase 4: will process and trigger responses.
-    """
     data = await request.json()
     print(f"[WEBHOOK RECEIVED] {json.dumps(data)}")
+
+    try:
+        entry = data.get("entry", [{}])[0]
+        changes = entry.get("changes", [{}])[0]
+        value = changes.get("value", {})
+        messages = value.get("messages", [])
+
+        if not messages:
+            return {"status": "ok"}
+
+        msg = messages[0]
+        from_number = msg.get("from")
+        msg_type = msg.get("type")
+        msg_text = ""
+
+        if msg_type == "text":
+            msg_text = msg.get("text", {}).get("body", "").strip().upper()
+
+        print(f"[MESSAGE FROM] {from_number}: {msg_text}")
+
+        # ── SUBSCRIBE command ──────────────────────
+        if msg_text == "SUBSCRIBE":
+            await save_subscriber(phone=from_number)
+            await send_whatsapp_message(
+                to=from_number,
+                message=(
+                    "✅ *Umejisajili kikamilifu!*\n\n"
+                    "Utapokea masasisho ya soko la DSE kila siku.\n\n"
+                    "Welcome to Sokoview Analytics — you'll receive daily "
+                    "DSE market briefs from us.\n\n"
+                    "——\n"
+                    "Send *STOP* at any time to unsubscribe.\n"
+                    "*sokoview.co.tz*"
+                )
+            )
+
+        # ── STOP / UNSUBSCRIBE command ─────────────
+        elif msg_text in ["STOP", "UNSUBSCRIBE"]:
+            try:
+                supabase.table("subscribers").update(
+                    {"is_active": False}
+                ).eq("phone", from_number).execute()
+            except Exception as e:
+                print(f"[UNSUBSCRIBE ERROR] {e}")
+
+            await send_whatsapp_message(
+                to=from_number,
+                message=(
+                    "Umefuta usajili wako. Hutapokea masasisho zaidi.\n\n"
+                    "You have been unsubscribed from Sokoview Analytics.\n"
+                    "Send *SUBSCRIBE* anytime to rejoin."
+                )
+            )
+
+        # ── Unknown message ────────────────────────
+        else:
+            await send_whatsapp_message(
+                to=from_number,
+                message=(
+                    "Habari! 👋 Welcome to *Sokoview Analytics*.\n\n"
+                    "Send *SUBSCRIBE* to receive daily DSE market briefs.\n"
+                    "Send *STOP* to unsubscribe.\n\n"
+                    "*sokoview.co.tz*"
+                )
+            )
+
+    except Exception as e:
+        print(f"[WEBHOOK ERROR] {e}")
+
     return {"status": "ok"}
+
+
+# ══════════════════════════════════════════════════
+# ROUTE 7 — LIST SUBSCRIBERS
+# GET /api/subscribers
+# ══════════════════════════════════════════════════
+@app.get("/api/subscribers")
+async def list_subscribers():
+    try:
+        result = supabase.table("subscribers").select("*").eq(
+            "is_active", True
+        ).execute()
+        return {
+            "status": "success",
+            "count": len(result.data),
+            "subscribers": result.data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
