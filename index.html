@@ -35,14 +35,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── UTILITY ─── */
 .container {
   max-width: 480px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
-/* ─── NAV ─── */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   background: rgba(255,255,255,0.85);
@@ -61,7 +59,6 @@ nav {
 .nav-mark .b { border-radius: 1px; background: var(--green); }
 .nav-name { font-size: 15px; font-weight: 800; color: var(--black); letter-spacing: -0.2px; }
 
-/* ─── HERO ─── */
 .hero {
   padding-top: 100px;
   padding-bottom: 0;
@@ -70,7 +67,6 @@ nav {
   overflow: hidden;
 }
 
-/* radial green glow from top */
 .hero::before {
   content: '';
   position: absolute;
@@ -80,7 +76,6 @@ nav {
   pointer-events: none;
 }
 
-/* subtle grid */
 .hero::after {
   content: '';
   position: absolute; inset: 0;
@@ -141,11 +136,15 @@ nav {
   animation: fadeUp 0.6s ease 0.2s both;
 }
 
-/* ─── CTA BUTTON ─── */
 .cta-wrap {
   animation: fadeUp 0.6s ease 0.3s both;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
+
 .cta-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   background: var(--wa-green);
@@ -167,7 +166,36 @@ nav {
 }
 .cta-btn:active { transform: translateY(0); }
 
+/* Channel follow button — outlined style */
+.cta-btn-outline {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  background: transparent;
+  color: var(--wa-green);
+  font-family: var(--font); font-size: 15px; font-weight: 700;
+  padding: 14px 32px;
+  border-radius: 14px;
+  border: 2px solid var(--wa-green);
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: -0.2px;
+  transition: transform 0.15s, background 0.15s, color 0.15s;
+  width: 100%; max-width: 380px;
+}
+.cta-btn-outline:hover {
+  background: var(--wa-green);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
 .cta-icon { width: 22px; height: 22px; flex-shrink: 0; }
+
+.cta-divider {
+  font-size: 11px; color: var(--gray-3); font-weight: 500;
+  display: flex; align-items: center; gap: 8px; width: 100%; max-width: 380px;
+}
+.cta-divider::before, .cta-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--gray-4);
+}
 
 .cta-note {
   font-size: 12px; color: var(--gray-3); font-weight: 400;
@@ -175,7 +203,6 @@ nav {
   margin-bottom: 48px;
 }
 
-/* ─── PHONE MOCKUP ─── */
 .phone-wrap {
   position: relative;
   display: flex; justify-content: center;
@@ -192,7 +219,6 @@ nav {
   position: relative;
 }
 
-/* notch */
 .phone::before {
   content: '';
   position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
@@ -209,7 +235,6 @@ nav {
   padding-top: 48px;
 }
 
-/* WA header */
 .wa-header {
   background: #075e54;
   padding: 10px 14px;
@@ -225,7 +250,6 @@ nav {
 .wa-name { font-size: 13px; font-weight: 700; color: #fff; }
 .wa-status { font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 1px; }
 
-/* chat area */
 .wa-chat {
   padding: 12px 10px;
   display: flex; flex-direction: column; gap: 8px;
@@ -233,7 +257,6 @@ nav {
   min-height: 200px;
 }
 
-/* messages */
 .msg {
   max-width: 80%;
   padding: 7px 10px;
@@ -297,7 +320,6 @@ nav {
   text-align: center; text-decoration: none;
 }
 
-/* input area */
 .wa-input {
   background: #f0f0f0;
   padding: 8px 10px;
@@ -313,7 +335,6 @@ nav {
   display: flex; align-items: center; justify-content: center;
 }
 
-/* ─── SOCIAL PROOF STRIP ─── */
 .proof-strip {
   background: var(--gray-5);
   border-top: 1px solid var(--gray-4);
@@ -337,7 +358,6 @@ nav {
 .proof-num span { color: var(--green); }
 .proof-lbl { font-size: 10px; font-weight: 500; color: var(--gray-3); text-transform: uppercase; letter-spacing: 0.08em; }
 
-/* ─── FEATURES ─── */
 .features {
   padding: 64px 24px;
   max-width: 480px; margin: 0 auto;
@@ -371,7 +391,6 @@ nav {
 .feat-title { font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
 .feat-sub { font-size: 12px; color: var(--gray-2); line-height: 1.55; }
 
-/* ─── HOW IT WORKS ─── */
 .how {
   padding: 64px 24px;
   background: var(--black);
@@ -397,7 +416,6 @@ nav {
 }
 .step:last-child { padding-bottom: 0; }
 
-/* connector line */
 .step:not(:last-child)::after {
   content: '';
   position: absolute;
@@ -417,7 +435,6 @@ nav {
 .step-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
 .step-sub { font-size: 12px; color: #6b7280; line-height: 1.55; }
 
-/* ─── BOTTOM CTA ─── */
 .bottom-cta {
   padding: 64px 24px;
   text-align: center;
@@ -440,7 +457,6 @@ nav {
   font-size: 14px; color: var(--gray-2); line-height: 1.6; margin-bottom: 32px;
 }
 
-/* ─── FOOTER ─── */
 footer {
   padding: 24px;
   border-top: 1px solid var(--gray-4);
@@ -456,7 +472,6 @@ footer {
 .footer-name { font-size: 13px; font-weight: 800; color: var(--black); }
 .footer-note { font-size: 11px; color: var(--gray-3); }
 
-/* ─── ANIMATIONS ─── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -470,14 +485,12 @@ footer {
   50%       { transform: scale(1.3); opacity: 0.7; }
 }
 
-/* reveal on scroll */
 .reveal {
   opacity: 0; transform: translateY(24px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
-/* ─── LANGUAGE TOGGLE ─── */
 .lang-toggle {
   display: flex; align-items: center; gap: 4px;
   background: var(--gray-5); border-radius: 100px;
@@ -496,7 +509,6 @@ footer {
   box-shadow: 0 1px 4px rgba(0,0,0,.08);
 }
 
-/* ─── MOBILE TWEAKS ─── */
 @media (max-width: 400px) {
   .hero-title { font-size: 34px; }
   .proof-num  { font-size: 22px; }
@@ -535,64 +547,64 @@ footer {
         <span data-en="The DSE in<br>your pocket.<br>" data-sw="DSE mfukoni<br>mwako.<br>">The DSE in<br>your pocket.<br></span><span class="hl" data-en="Daily." data-sw="Kila Siku.">Daily.</span>
       </h1>
 
-      <p class="hero-sub" data-en="Get live DSE market updates, dividend alerts, and top stock insights — delivered straight to WhatsApp. Free." data-sw="Pata habari za soko la DSE, arifa za gawio, na uchambuzi wa hisa — moja kwa moja kwenye WhatsApp. Bure.">
-        Get live DSE market updates, dividend alerts, and top stock insights — delivered straight to WhatsApp. Free.
+      <p class="hero-sub" data-en="Get live DSE market updates, dividend alerts, and top stock insights — delivered straight to WhatsApp. Free." data-sw="Pata habari za soko la DSE, Taarifa za gawio, na uchambuzi wa hisa — moja kwa moja kwenye WhatsApp. Bure.">
+        Pata habari za soko la DSE, Taarifa za gawio, na uchambuzi wa hisa — moja kwa moja kwenye WhatsApp. Bure.
       </p>
 
       <div class="cta-wrap">
+        <!-- Primary: Follow Channel -->
         <a class="cta-btn"
-           href="https://wa.me/255700000000?text=SUBSCRIBE"
+           href="https://whatsapp.com/channel/0029Vb85cBc1dAw43D7Msm3Q"
            target="_blank" rel="noopener">
           <svg class="cta-icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
           </svg>
-          <span data-en="Join on WhatsApp — It's Free" data-sw="Jiunge WhatsApp — Bila Malipo">Join on WhatsApp — It's Free</span>
+          <span>Follow Channel — It's Free</span>
         </a>
+
+
       </div>
-      <p class="cta-note" data-en="Opens WhatsApp · No app download needed · Unsubscribe anytime" data-sw="Inafungua WhatsApp · Hakuna programu ya kupakua · Jitoe wakati wowote">Opens WhatsApp · No app download needed · Unsubscribe anytime</p>
+
+      <p class="cta-note" data-en="No app download needed · Unsubscribe anytime" data-sw="Hakuna programu ya kupakua · Jitoe wakati wowote">No app download needed · Unsubscribe anytime</p>
 
       <!-- PHONE MOCKUP -->
       <div class="phone-wrap">
         <div class="phone">
-          <div class="phone-screen">
-            <!-- WA header -->
-            <div class="wa-header">
-              <div class="wa-avatar">
-                <svg viewBox="0 0 24 24" fill="white">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-              </div>
-              <div class="wa-info">
-                <div class="wa-name">Sokoview</div>
-                <div class="wa-status">DSE Market Intelligence</div>
+          <div class="phone-screen" style="background:#e5ddd5;">
+            <div style="background:#075e54;padding:10px 14px;display:flex;align-items:center;gap:8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white" opacity="0.8"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              <div style="width:32px;height:32px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#000;">S</div>
+              <div>
+                <div style="font-size:12px;font-weight:700;color:#fff;">Sokoview Analytics</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.65);">Channel · 1.2K followers</div>
               </div>
             </div>
 
-            <!-- Chat -->
-            <div class="wa-chat">
-              <div class="msg msg-in">
-                👋 Hi! Type <strong>SUBSCRIBE</strong> to join the Sokoview DSE Channel.
-                <div class="msg-time">09:00</div>
-              </div>
-              <div class="msg msg-out">
-                SUBSCRIBE
-                <div class="msg-time">09:01 ✓✓</div>
-              </div>
-              <div class="msg-invite msg">
-                <div class="msg-invite-label">📈 Sokoview DSE Channel</div>
-                <div class="msg-invite-title">Join the Channel</div>
-                <div class="msg-invite-sub">Daily DSE updates, dividends & top stock picks</div>
-                <a class="msg-invite-btn" href="#">Join Channel →</a>
-                <div class="msg-time">09:01</div>
-              </div>
-            </div>
+            <!-- Channel posts feed -->
+            <div style="background:#e5ddd5;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:220px;">
 
-            <!-- Input -->
-            <div class="wa-input">
-              <div class="wa-input-box">Message</div>
-              <div class="wa-send">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              <!-- Channel info card -->
+              <div style="background:#fff;border-radius:10px;padding:10px;text-align:center;">
+                <div style="width:42px;height:42px;border-radius:50%;background:#25D366;margin:0 auto 5px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;">S</div>
+                <div style="font-size:11px;font-weight:700;color:#111;">Sokoview Analytics</div>
+                <div style="font-size:9px;color:#888;margin:2px 0 7px;">1.2K followers · DSE Channel</div>
+                <div style="background:#25D366;color:#fff;font-size:10px;font-weight:700;padding:4px 16px;border-radius:20px;display:inline-block;">✓ Following</div>
               </div>
+
+              <!-- Post 1 -->
+              <div style="background:#fff;border-radius:10px;padding:9px 10px;">
+                <div style="font-size:9px;color:#25D366;font-weight:700;margin-bottom:4px;">📈 DSE UPDATE · Today</div>
+                <div style="font-size:10px;color:#111;line-height:1.5;"><b>CRDB</b> up 2.3% · <b>NMB</b> leads volume · AGM alert this week</div>
+                <div style="font-size:8px;color:#aaa;margin-top:4px;text-align:right;">09:00 · 👁 847</div>
+              </div>
+
+              <!-- Post 2 -->
+              <div style="background:#fff;border-radius:10px;padding:9px 10px;">
+                <div style="font-size:9px;color:#25D366;font-weight:700;margin-bottom:4px;">💰 DIVIDEND ALERT · Yesterday</div>
+                <div style="font-size:10px;color:#111;line-height:1.5;"><b>TZS 65/share</b> — CRDB dividend lands today.</div>
+                <div style="font-size:8px;color:#aaa;margin-top:4px;text-align:right;">09:00 · 👁 912</div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -602,21 +614,7 @@ footer {
   </div>
 </section>
 
-<!-- SOCIAL PROOF -->
-<div class="proof-strip reveal">
-  <div class="proof-item">
-    <div class="proof-num">207<span>+</span></div>
-    <div class="proof-lbl" data-en="Subscribers" data-sw="Wanachama">Subscribers</div>
-  </div>
-  <div class="proof-item">
-    <div class="proof-num"><span>5</span>x</div>
-    <div class="proof-lbl" data-en="Per week" data-sw="Kwa wiki">Per week</div>
-  </div>
-  <div class="proof-item">
-    <div class="proof-num"><span>Free</span></div>
-    <div class="proof-lbl" data-en="Always" data-sw="Daima">Always</div>
-  </div>
-</div>
+
 
 <!-- FEATURES -->
 <section class="features reveal">
@@ -664,22 +662,22 @@ footer {
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-content">
-          <div class="step-title" data-en='Tap "Join on WhatsApp"' data-sw="Bonyeza — Jiunge WhatsApp">Tap "Join on WhatsApp"</div>
-          <div class="step-sub" data-en='Opens WhatsApp with the message "SUBSCRIBE" pre-typed — ready to send.' data-sw="Inafungua WhatsApp na ujumbe &quot;SUBSCRIBE&quot; umewekwa tayari — tayari kutumwa.">Opens WhatsApp with the message "SUBSCRIBE" pre-typed — ready to send.</div>
+          <div class="step-title" data-en='Tap "Follow Channel"' data-sw="Bonyeza — Fuata Channel">Tap "Follow Channel"</div>
+          <div class="step-sub" data-en="Opens WhatsApp and takes you directly to the Sokoview Analytics channel." data-sw="Inafungua WhatsApp na kukupeleka moja kwa moja kwenye channel ya Sokoview Analytics.">Opens WhatsApp and takes you directly to the Sokoview Analytics channel.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
-          <div class="step-title" data-en="Send the message" data-sw="Tuma ujumbe">Send the message</div>
-          <div class="step-sub" data-en="Our bot instantly replies with your personal invite link to the Sokoview DSE Channel." data-sw="Bot yetu inajibu mara moja na kiungo chako cha mwaliko cha channel yetu ya Sokoview.">Our bot instantly replies with your personal invite link to the Sokoview DSE Channel.</div>
+          <div class="step-title" data-en="Tap Follow" data-sw="Bonyeza Fuata">Tap Follow</div>
+          <div class="step-sub" data-en="One tap and you're in — no signup, no password, no app download." data-sw="Bonyeza moja na uko ndani — hakuna usajili, hakuna nenosiri, hakuna programu ya kupakua.">One tap and you're in — no signup, no password, no app download.</div>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-content">
-          <div class="step-title" data-en="Tap the link, join the channel" data-sw="Bonyeza kiungo, jiunge na channel">Tap the link, join the channel</div>
-          <div class="step-sub" data-en="You're in. Daily DSE intelligence starts hitting your WhatsApp immediately." data-sw="Umefika. Habari za kila siku za DSE zinaanza kuja WhatsApp yako moja kwa moja.">You're in. Daily DSE intelligence starts hitting your WhatsApp immediately.</div>
+          <div class="step-title" data-en="Get daily DSE intelligence" data-sw="Pata habari za DSE kila siku">Get daily DSE intelligence</div>
+          <div class="step-sub" data-en="Daily DSE market briefs start arriving in your WhatsApp Updates tab." data-sw="Taarifa za kila siku za soko la DSE zinaanza kuja kwenye kichupo chako cha Masasisho ya WhatsApp.">Daily DSE market briefs start arriving in your WhatsApp Updates tab.</div>
         </div>
       </div>
     </div>
@@ -691,15 +689,17 @@ footer {
   <div class="bottom-cta-inner">
     <h2 class="bottom-cta-title" data-en="Start tracking the DSE <span>today.</span>" data-sw="Anza kufuatilia DSE <span>leo.</span>">Start tracking the DSE <span>today.</span></h2>
     <p class="bottom-cta-sub" data-en="Join 207+ investors already receiving daily DSE intelligence on WhatsApp. Free, forever." data-sw="Jiunge na wawekezaji 207+ wanaopokea habari za kila siku za DSE kwenye WhatsApp. Bure, milele.">Join 207+ investors already receiving daily DSE intelligence on WhatsApp. Free, forever.</p>
-    <a class="cta-btn"
-       href="https://wa.me/255700000000?text=SUBSCRIBE"
-       target="_blank" rel="noopener"
-       style="max-width:100%">
-      <svg class="cta-icon" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-      </svg>
-      <span data-en="Join on WhatsApp — It's Free" data-sw="Jiunge WhatsApp — Bila Malipo">Join on WhatsApp — It's Free</span>
-    </a>
+    <div class="cta-wrap" style="animation:none">
+      <a class="cta-btn"
+         href="https://whatsapp.com/channel/0029Vb85cBc1dAw43D7Msm3Q"
+         target="_blank" rel="noopener"
+         style="max-width:100%">
+        <svg class="cta-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        <span>Follow Channel — It's Free</span>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -717,27 +717,19 @@ footer {
 </footer>
 
 <script>
-// ── LANGUAGE TOGGLE ───────────────────────────────
 function setLang(lang) {
-  // Update button states
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
   document.getElementById('btn-sw').classList.toggle('active', lang === 'sw');
-
-  // Update all elements with data-en / data-sw attributes
   document.querySelectorAll('[data-en]').forEach(el => {
     const text = el.getAttribute(`data-${lang}`);
     if (text) el.innerHTML = text;
   });
-
-  // Store preference
   localStorage.setItem('sokoview_lang', lang);
 }
 
-// Apply saved language on load — default is SW
 const savedLang = localStorage.getItem('sokoview_lang') || 'sw';
 if (savedLang === 'sw') setLang('sw');
 
-// ── SCROLL REVEAL ─────────────────────────────────
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(el => {
     if (el.isIntersecting) {
