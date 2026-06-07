@@ -2,3 +2,5 @@ fastapi
 uvicorn[standard]
 anthropic
 python-multipart
+supabase
+httpx
